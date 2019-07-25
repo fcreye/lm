@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.t.mw.dao.MwInfoDao">
+    
+	<sql id="mwInfoColumns">
+		a.id AS "id",
+		a.mw_id AS "mwId",
+		a.mw_type AS "mwType",
+		a.mw_date AS "mwDate",
+		a.mw_info AS "mwInfo",
+		a.name AS "name",
+		a.remarks AS "remarks",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="mwInfoJoins">
+	</sql>
+    
+	<select id="get" resultType="MwInfo">
+		SELECT 
+			<include refid="mwInfoColumns"/>
+		FROM t_mw_info a
+		<include refid="mwInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MwInfo">
+		SELECT 
+			<include refid="mwInfoColumns"/>
+		FROM t_mw_info a
+		<include refid="mwInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="mwId != null and mwId != ''">
+				AND a.mw_id = #{mwId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MwInfo">
+		SELECT 
+			<include refid="mwInfoColumns"/>
+		FROM t_mw_info a
+		<include refid="mwInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_mw_info(
+			id,
+			mw_id,
+			mw_type,
+			mw_date,
+			mw_info,
+			name,
+			remarks,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{mwId},
+			#{mwType},
+			#{mwDate},
+			#{mwInfo},
+			#{name},
+			#{remarks},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_mw_info SET 	
+			mw_id = #{mwId},
+			mw_type = #{mwType},
+			mw_date = #{mwDate},
+			mw_info = #{mwInfo},
+			name = #{name},
+			remarks = #{remarks},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_mw_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

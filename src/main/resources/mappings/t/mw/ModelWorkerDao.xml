@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.t.mw.dao.ModelWorkerDao">
+    
+	<sql id="modelWorkerColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.birthday AS "birthday",
+		a.id_code AS "idCode",
+		a.org AS "org",
+		a.image AS "image",
+		a.content AS "content",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.name_d AS "nameD",
+		a.name_c AS "nameC"
+	</sql>
+	
+	<sql id="modelWorkerJoins">
+	</sql>
+    
+	<select id="get" resultType="ModelWorker">
+		SELECT 
+			<include refid="modelWorkerColumns"/>
+		FROM t_model_worker a
+		<include refid="modelWorkerJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ModelWorker">
+		SELECT 
+			<include refid="modelWorkerColumns"/>
+		FROM t_model_worker a
+		<include refid="modelWorkerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE concat('%',#{name},'%')
+			</if>
+			<if test="sex != null and sex != ''">
+				AND a.sex = #{sex}
+			</if>
+			<if test="remarks != null and remarks != ''">
+				AND a.remarks LIKE concat('%',#{remarks},'%')
+			</if>
+			<if test="birthday != null and birthday != ''">
+				AND a.birthday = #{birthday}
+			</if>
+			<if test="idCode != null and idCode != ''">
+				AND a.id_code = #{idCode}
+			</if>
+			<if test="updateDate != null and updateDate != ''">
+				AND a.id in(select t.mw_id from t_mw_info t where t.mw_date =#{updateDate})
+			</if>
+			<if test="nameC != null and nameC != ''">
+				AND a.id in(select t.mw_id from t_mw_info t where t.mw_type =#{nameC})
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ModelWorker">
+		SELECT 
+			<include refid="modelWorkerColumns"/>
+		FROM t_model_worker a
+		<include refid="modelWorkerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_model_worker(
+			id,
+			name,
+			sex,
+			birthday,
+			id_code,
+			org,
+			image,
+			content,
+			remarks,
+			del_flag,
+			name_d,
+			name_c
+		) VALUES (
+			#{id},
+			#{name},
+			#{sex},
+			#{birthday},
+			#{idCode},
+			#{org},
+			#{image},
+			#{content},
+			#{remarks},
+			#{delFlag},
+			#{nameD},
+			#{nameC}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_model_worker SET 	
+			name = #{name},
+			sex = #{sex},
+			birthday = #{birthday},
+			id_code = #{idCode},
+			org = #{org},
+			image = #{image},
+			content = #{content},
+			remarks = #{remarks},
+			name_d = #{nameD},
+			name_c = #{nameC}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_model_worker SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
